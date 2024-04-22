@@ -1,11 +1,12 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #define MAXBUFF 1024 // numero de caract. do buffer
 
-main(){
+
+
+int main(){
 
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
@@ -52,15 +53,39 @@ Recebe os dados do FILHO e imprime na tela
 ------------------------ */
 client (readfd, writefd)
     int readfd, // leitura do pipe2[0]
-        writefd; // escrita no pipe1[1]
+        writefd;// escrita no pipe1[1]
 {
     char buff[MAXBUFF];
+    int aux = 0;
     while(1)
     {
+        printf("Ataque: \n 1 - Gerar deadlock \n 2 - Dividir por zero \n 3 - Jogar um tijolo na CPU \n 4 - Sair \n\n"); 
+        scanf("%d", &aux);
+        switch (aux)
+        {
+        case 1:
+            printf(" \n Gerando deadlock no processo inimigo\n");
+                strcpy(buff, "Tomei um Deadlock na boca");
+            break;
+        case 2:
+            printf(" \n Dividindo por zero no processo inimigo\n");
+                strcpy(buff, "Dividi por zero e deu pau em tudo");
+            break;
+        case 3:
+            printf(" \n Jogando um tijolo na CPU do processo inimigo\n");
+                strcpy(buff, "Tomei uma tijolada na CPU, ai que dor");
+            break;
+        case 4:
+            printf(" \n Saindo do programa\n");
+            exit(0);
+            break;
+        default:
+            break;
+        }
         printf(" \n Client->");
-        gets(buff);
-        write(writefd, buff, 10);
-        read(readfd,buff,10);
+        //gets(buff);
+        write(writefd, buff, 30);
+        read(readfd,buff,30);
         printf(" \n Client <- %s",buff);
     }
 } // Fim da Funcao CLIENT
@@ -81,10 +106,10 @@ server(readfd, writefd)
     int n, fd;
     while(1)
     {
-        read(readfd,buff,10);
+        read(readfd,buff,30);
         printf(" \n Server<- %s",buff);
         printf(" \n Server->");
         gets(buff);
-        write(writefd, buff, 10);
+        write(writefd, buff, 30);
     }
 } // Fim da Funcao Server
