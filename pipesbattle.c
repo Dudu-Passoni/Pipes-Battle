@@ -71,7 +71,8 @@ void client (readfd, writefd)
     while(1)
     {
         
-        printf("\n Client->\n Ataque: \n 1 - Gerar deadlock \n 2 - Dividir por zero \n 3 - Jogar um tijolo na CPU \n 4 - Sair \n\n"); 
+        printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Sair \n\n"); 
+
         scanf("%d", &aux);
         printf(" \n Client->");
 
@@ -105,6 +106,11 @@ void client (readfd, writefd)
 
         printf("\n Client->");
         printf(" Vida: %d\n", vida);
+
+        if(vida <= 0){
+            printf("Client perdeu :(\n");
+            exit(0);
+        }
     }
 } // Fim da Funcao CLIENT
 
@@ -139,7 +145,13 @@ void server(readfd, writefd)
         printf("\n Server->");
         printf(" Vida: %d\n", vida);
 
-        printf("\n Server->\n Ataque: \n 1 - Rodar um programa .exe \n 2 - Abrir Google Chrome no Processo inimigo \n 3 - Abrir Android Studio \n 4 - Sair \n\n");
+        if(vida <= 0){
+            printf("Client perdeu :(\n");
+            exit(0);
+        }
+
+        printf("\n Server->\n Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Sair \n\n");
+
         scanf("%d", &aux1);
         printf(" \n Server->");
 
@@ -178,9 +190,9 @@ int atack(char ident[40]){
 
     if (strcmp(ident, "Deadlock") == 0){
         printf("\n Server ->");
-        if(rand() % 100 > 30){
+        if(rand() % 100 > 40){
             printf(" Tomei um Deadlock na boca\n");
-                return 30;
+                return 10;
         }
         else{
             printf(" *Miss* Errou o ataque, trouxa!\n");
@@ -189,9 +201,9 @@ int atack(char ident[40]){
     }
     else if (strcmp(ident, "Divisao por zero") == 0){
         printf("\n Server ->");
-        if (rand() % 100 > 40){
+        if (rand() % 100 > 30){
             printf(" Deu pau em tudo, meu BCP sumiu!!\n");
-                return 40;
+                return 5;
         }
         else{
             printf(" *Miss* Não vou dividir nada!\n");
@@ -200,9 +212,9 @@ int atack(char ident[40]){
     }
     else if (strcmp(ident, "Tijolada na CPU") == 0){
         printf("\n Server ->");
-        if (rand() % 100 > 40){
+        if (rand() % 100 > 60){
             printf(" Tomei uma tijolada na CPU, ai\n");
-                return 40;
+                return 20;
         }
         else{
             printf(" *Miss* Esquivo, esquivo!\n");
@@ -214,9 +226,9 @@ int atack(char ident[40]){
 
     else if(strcmp(ident, "Rodar exe") == 0){
         printf("\n Client ->");
-        if(rand() % 100 > 50){
+        if(rand() % 100 > 60){
             printf(" Credo, Windows!\n");
-                return 50;
+                return 25;
         }
         else{
             printf(" *Miss* Deus me livre, executar programa de Windows!\n");
@@ -228,7 +240,7 @@ int atack(char ident[40]){
 
         if(rand() % 100 > 30){
             printf(" Nããããão, minha RAM!\n");
-                return 30;
+                return 10;
         }
         else{
             printf(" *Miss* NÃO. Minha RAM é só minha!\n");
@@ -238,9 +250,9 @@ int atack(char ident[40]){
     else if(strcmp(ident, "Abrir Android Studio") == 0){
         printf("\n Client ->");
 
-        if(rand() % 100 > 45){
+        if(rand() % 100 > 50){
             printf(" Estou sem recursos, meu Deus!\n");
-                return 45;
+                return 15;
         }
         else{
             printf(" *Miss* Errou, bobão!\n");
