@@ -8,6 +8,7 @@
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
 int atack(char ident[40]);
+int energy(char ident[40]);
 
 int main(int argc, char **argv){
 
@@ -61,17 +62,16 @@ void client (readfd, writefd)
     struct str{
         char escritas[MAXBUFF];
         char identify[MAXBUFF];
-        int mana;
-
     };
     struct str buff;
     int aux = 0;
     int vida = 100;
+    int mana = 100;
 
     while(1)
     {
         
-        printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Sair \n\n"); 
+        printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n"); 
 
         scanf("%d", &aux);
         printf(" \n Client->");
@@ -91,9 +91,13 @@ void client (readfd, writefd)
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
+            printf(" Recarregando\n");
+                strcpy(buff.identify, "Recarregar");
+            break;
+        case 5:
             printf(" Saindo do programa\n");
             exit(0);
-            break;
+            break;    
         default:
             exit(0);
             break;
@@ -111,6 +115,12 @@ void client (readfd, writefd)
             printf("Client perdeu :(\n");
             exit(0);
         }
+
+        int energia = energy(buff.identify);
+        mana = mana - energia;
+
+        printf("\n Client->");
+        printf(" Mana: %d\n", mana);
     }
 } // Fim da Funcao CLIENT
 
@@ -134,6 +144,7 @@ void server(readfd, writefd)
     struct str buff;
     int aux1 =0;
     int vida = 100;
+    int mana = 100;
 
     while(1)
     {
@@ -141,16 +152,25 @@ void server(readfd, writefd)
 
         int dano = atack(buff.identify);
         vida = vida - dano;
-
-        printf("\n Server->");
-        printf(" Vida: %d\n", vida);
-
+        
         if(vida <= 0){
             printf("Client perdeu :(\n");
             exit(0);
         }
+        else 
+        {
+        printf("\n Server->");
+        printf(" Vida: %d\n", vida);
+        }
 
-        printf("\n Server->\n Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Sair \n\n");
+        int energia = energy(buff.identify);
+        mana = mana - energia;
+
+        printf("\n Server->");
+        printf(" Mana: %d\n", mana);
+
+
+        printf("\n Server->\n Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Recarregar\n 5 - Sair \n\n");
 
         scanf("%d", &aux1);
         printf(" \n Server->");
@@ -170,6 +190,10 @@ void server(readfd, writefd)
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
+            printf(" Recarregando\n");
+                strcpy(buff.identify, "Recarregar");
+            break;
+        case 5:
             printf(" Saindo do programa\n");
             exit(0);
             break;
@@ -259,8 +283,44 @@ int atack(char ident[40]){
                 return 0;
         }
     }
+    else if(strcmp(ident, "Recarregar") == 0){
+        printf("Recarregando\n");
+            return 0;
+    }
     else{
         printf("Ataque invalido\n");
+            return 0;
+    }
+}
+
+
+//_______________________________________________________________________
+int energy(char ident[40]){
+    if (strcmp(ident, "Deadlock") == 0){    
+            return 25;
+    }
+    else if (strcmp(ident, "Divisao por zero") == 0){
+            return 25;
+    }
+    else if (strcmp(ident, "Tijolada na CPU") == 0){
+            return 25;
+    }
+    //_______________________________________________________________
+    //Energia do proximo sub-processo
+
+    else if(strcmp(ident, "Rodar exe") == 0){
+            return 25;
+    }
+    else if(strcmp(ident, "Abrir Google Chrome") == 0){
+            return 25;
+    }
+    else if(strcmp(ident, "Abrir Android Studio") == 0){
+            return 25;
+    }
+    else if(strcmp(ident, "Recarregar") == 0){
+            return -25;
+    }
+    else{
             return 0;
     }
 }
