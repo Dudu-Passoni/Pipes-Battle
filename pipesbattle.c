@@ -70,7 +70,7 @@ void client (readfd, writefd)
 
     while(1)
     {
-        
+        printf(" \n Client-> Mana: %d\n", mana);
         printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n"); 
 
         scanf("%d", &aux);
@@ -80,19 +80,22 @@ void client (readfd, writefd)
         {
         case 1:
             printf(" Gerando deadlock no processo inimigo\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Deadlock");
             break;
         case 2:
             printf(" Dividindo por zero no processo inimigo\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Divisao por zero");
             break;
         case 3:
             printf(" Jogando um tijolo na CPU do processo inimigo\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
             printf(" Recarregando\n");
-                strcpy(buff.identify, "Recarregar");
+                mana = mana + 25;
             break;
         case 5:
             printf(" Saindo do programa\n");
@@ -109,18 +112,14 @@ void client (readfd, writefd)
         vida = vida - dano;
 
         printf("\n Client->");
-        printf(" Vida: %d\n", vida);
+        printf(" Vida: %d", vida);
 
         if(vida <= 0){
             printf("Client perdeu :(\n");
             exit(0);
         }
 
-        int energia = energy(buff.identify);
-        mana = mana - energia;
-
         printf("\n Client->");
-        printf(" Mana: %d\n", mana);
     }
 } // Fim da Funcao CLIENT
 
@@ -160,11 +159,8 @@ void server(readfd, writefd)
         else 
         {
         printf("\n Server->");
-        printf(" Vida: %d\n", vida);
+        printf(" Vida: %d", vida);
         }
-
-        int energia = energy(buff.identify);
-        mana = mana - energia;
 
         printf("\n Server->");
         printf(" Mana: %d\n", mana);
@@ -179,19 +175,22 @@ void server(readfd, writefd)
         {
         case 1:
             printf(" Rodando exe no processo inimigo\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Rodar exe");
             break;
         case 2:
             printf(" Abrindo o Google Chrome...\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Abrir Google Chrome");
             break;
         case 3:
             printf(" Abrindo Android Studio no processo inimigo\n");
+                mana = mana - 25;
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
             printf(" Recarregando\n");
-                strcpy(buff.identify, "Recarregar");
+                mana = mana + 25;
             break;
         case 5:
             printf(" Saindo do programa\n");
@@ -316,9 +315,6 @@ int energy(char ident[40]){
     }
     else if(strcmp(ident, "Abrir Android Studio") == 0){
             return 25;
-    }
-    else if(strcmp(ident, "Recarregar") == 0){
-            return -25;
     }
     else{
             return 0;
