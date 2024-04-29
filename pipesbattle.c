@@ -138,7 +138,6 @@ void server(readfd, writefd)
     struct str{
         char escritas[MAXBUFF];
         char identify[MAXBUFF];
-        int mana;
     };
     struct str buff;
     int aux1 =0;
@@ -291,6 +290,5 @@ int atack(char ident[40]){
             return 0;
     }
 }
-
 
 //_______________________________________________________________________
