@@ -8,7 +8,7 @@
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
 int atack(char ident[40]);
-int energy(char ident[40]);
+
 
 int main(int argc, char **argv){
 
@@ -294,29 +294,3 @@ int atack(char ident[40]){
 
 
 //_______________________________________________________________________
-int energy(char ident[40]){
-    if (strcmp(ident, "Deadlock") == 0){    
-            return 25;
-    }
-    else if (strcmp(ident, "Divisao por zero") == 0){
-            return 25;
-    }
-    else if (strcmp(ident, "Tijolada na CPU") == 0){
-            return 25;
-    }
-    //_______________________________________________________________
-    //Energia do proximo sub-processo
-
-    else if(strcmp(ident, "Rodar exe") == 0){
-            return 25;
-    }
-    else if(strcmp(ident, "Abrir Google Chrome") == 0){
-            return 25;
-    }
-    else if(strcmp(ident, "Abrir Android Studio") == 0){
-            return 25;
-    }
-    else{
-            return 0;
-    }
-}
