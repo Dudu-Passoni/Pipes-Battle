@@ -6,6 +6,6 @@ Battle between two sub-processes using pipes to comunicate.
 ##
 To run on linux:
 ```
-gcc -o PipesBattle pipesbattle.c
+gcc -o PipesBattle pipesbattle.c -pthread
 ./PipesBattle
 ```
