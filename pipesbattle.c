@@ -2,19 +2,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 
-#define MAXBUFF 1024 // numero de caract. do buffer
+#define MAXBUFF 1024
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
 int atack(char ident[40]);
 
+void *count_time(void *arg);
 
 int main(int argc, char **argv){
 
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
     pipe2[2]; // comunicacao filho -> pai
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, count_time, NULL);
 
     if (pipe(pipe1)<0 || pipe(pipe2) <0)
     { 
@@ -290,5 +295,13 @@ int atack(char ident[40]){
             return 0;
     }
 }
-
 //_______________________________________________________________________
+
+void *count_time(void *arg){
+    unsigned long int i;
+    for(i = 0; i < 10000; i++){
+        printf("Tempo: %ld\n", i);
+        sleep(1);
+    }
+    pthread_exit(NULL);
+}
