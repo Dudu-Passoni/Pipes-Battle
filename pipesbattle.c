@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "teste.h"
 
 #define MAXBUFF 1024
 
@@ -80,7 +81,7 @@ void client (readfd, writefd)
 	    printf("\n Vida do Server: %d\n", buff.vida_inimigo);
 
         printf(" \n Client-> Mana: %d\n", mana);
-        printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n"); 
+        printf("\n %s", info_client); 
 
         scanf("%d", &aux);
         printf(" \n Client->");
@@ -88,22 +89,22 @@ void client (readfd, writefd)
         switch (aux)
         {
         case 1:
-            printf(" Gerando deadlock no processo inimigo\n");
+            printf(" %s", info_attack_1);
                 mana = mana - 25;
                 strcpy(buff.identify, "Deadlock");
             break;
         case 2:
-            printf(" Dividindo por zero no processo inimigo\n");
+            printf(" %s", info_attack_2);
                 mana = mana - 25;
                 strcpy(buff.identify, "Divisao por zero");
             break;
         case 3:
-            printf(" Jogando um tijolo na CPU do processo inimigo\n");
+            printf(" %s", info_attack_3);
                 mana = mana - 25;
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
-            printf(" Recarregando\n");
+            printf(" %s", info_reload);
                 mana = mana + 25;
             break;
         case 5:
@@ -117,19 +118,18 @@ void client (readfd, writefd)
     buff.vida_inimigo = atoi(vida_inimigo_conv);
 
         write(writefd, buff.identify, 40);
-	    write(writefd, vida_inimigo_conv, 40);
+	    //write(writefd, vida_inimigo_conv, 40);
 
         read(readfd, buff.identify, 40);
-	    read(readfd, vida_inimigo_conv, 40);
+	    //read(readfd, vida_inimigo_conv, 40);
         	
-	system("clear");
+	//system("clear");
 
         int dano = atack(buff.identify);
         vida = vida - dano;
 
         printf("\n Client->");
         printf(" Vida: %d", vida);
-        buff.vida_inimigo = vida;
 
         if(vida <= 0){
             printf("Client perdeu :(\n");
@@ -163,9 +163,9 @@ void server(readfd, writefd)
     while(1)
     {
         read(readfd, buff.identify, 40);
-	    read(readfd, vida_inimigo_conv, 40);
+	    //read(readfd, vida_inimigo_conv, 40);
 
-	system("clear");
+	//system("clear");
         int dano = atack(buff.identify);
         vida = vida - dano;
         
@@ -186,7 +186,7 @@ void server(readfd, writefd)
         printf(" Mana: %d\n", mana);
 
 
-        printf("\n Server->\n Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Recarregar\n 5 - Sair \n\n");
+        printf("\n %s", info_server);
 
         scanf("%d", &aux1);
         printf(" \n Server->");
@@ -194,22 +194,22 @@ void server(readfd, writefd)
         switch (aux1)
         {
         case 1:
-            printf(" Rodando exe no processo inimigo\n");
+            printf(" %s", info_attack_1_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Rodar exe");
             break;
         case 2:
-            printf(" Abrindo o Google Chrome...\n");
+            printf(" %s", info_attack_2_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Abrir Google Chrome");
             break;
         case 3:
-            printf(" Abrindo Android Studio no processo inimigo\n");
+            printf(" %s", info_attack_3_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
-            printf(" Recarregando\n");
+            printf(" %s", info_reload);
                 mana = mana + 25;
             break;
         case 5:
@@ -221,8 +221,7 @@ void server(readfd, writefd)
             break;
         }
         buff.vida_inimigo = atoi(vida_inimigo_conv);
-
-	    write(writefd, vida_inimigo_conv, 40);
+	    //write(writefd, vida_inimigo_conv, 40);
         write(writefd, buff.identify, 40);
     }
 } // Fim da Funcao Server
