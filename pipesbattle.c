@@ -65,16 +65,20 @@ void client (readfd, writefd)
         writefd;// escrita no pipe1[1]
 {
     struct str{
-        char escritas[MAXBUFF];
+        int vida_inimigo;
         char identify[MAXBUFF];
     };
     struct str buff;
     int aux = 0;
     int vida = 100;
     int mana = 100;
+    char vida_inimigo_conv[40];
+
 
     while(1)
     {
+	    printf("\n Vida do Server: %d\n", buff.vida_inimigo);
+
         printf(" \n Client-> Mana: %d\n", mana);
         printf("\n Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n"); 
 
@@ -110,21 +114,27 @@ void client (readfd, writefd)
             exit(0);
             break;
         }
+    buff.vida_inimigo = atoi(vida_inimigo_conv);
+
         write(writefd, buff.identify, 40);
-        read(readfd,buff.identify,40);
-        
+	    write(writefd, vida_inimigo_conv, 40);
+
+        read(readfd, buff.identify, 40);
+	    read(readfd, vida_inimigo_conv, 40);
+        	
+	system("clear");
+
         int dano = atack(buff.identify);
         vida = vida - dano;
 
         printf("\n Client->");
         printf(" Vida: %d", vida);
+        buff.vida_inimigo = vida;
 
         if(vida <= 0){
             printf("Client perdeu :(\n");
             exit(0);
         }
-
-        printf("\n Client->");
     }
 } // Fim da Funcao CLIENT
 
@@ -141,18 +151,21 @@ void server(readfd, writefd)
         writefd; // escrita no pipe2[1]
 {
     struct str{
-        char escritas[MAXBUFF];
+        int vida_inimigo;
         char identify[MAXBUFF];
     };
     struct str buff;
     int aux1 =0;
     int vida = 100;
     int mana = 100;
+	char vida_inimigo_conv[40];
 
     while(1)
     {
-        read(readfd,buff.identify,40);
+        read(readfd, buff.identify, 40);
+	    read(readfd, vida_inimigo_conv, 40);
 
+	system("clear");
         int dano = atack(buff.identify);
         vida = vida - dano;
         
@@ -162,8 +175,11 @@ void server(readfd, writefd)
         }
         else 
         {
+        printf("\n Vida do Client: %d\n", buff.vida_inimigo);    
+
         printf("\n Server->");
         printf(" Vida: %d", vida);
+        buff.vida_inimigo = vida;
         }
 
         printf("\n Server->");
@@ -204,7 +220,9 @@ void server(readfd, writefd)
             exit(0);
             break;
         }
+        buff.vida_inimigo = atoi(vida_inimigo_conv);
 
+	    write(writefd, vida_inimigo_conv, 40);
         write(writefd, buff.identify, 40);
     }
 } // Fim da Funcao Server
@@ -300,8 +318,9 @@ int atack(char ident[40]){
 void *count_time(void *arg){
     unsigned long int i;
     for(i = 0; i < 10000; i++){
-        printf("Tempo: %ld\n", i);
-        sleep(1);
+        //system("clear");
+        //printf("Tempo: %ld\n", i);
+        //sleep(1);
     }
     pthread_exit(NULL);
 }
