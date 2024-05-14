@@ -1,6 +1,6 @@
 // Descrição: Arquivo de cabeçalho com as definições de constantes utilizadas no programa.
-char info_client[240] = "Client->\n Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de cahnce de acerto\n 2 - Dividir por zero - 5 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n";
-char info_server[269] = "Server->\n Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Recarregar\n 5 - Sair \n\n";
+char info_client[240] = "Client-> Ataque: \n 1 - Gerar deadlock - 10 de dano - 60 de chance de acerto\n 2 - Dividir por zero - 15 de dano - 70 de chance de acerto\n 3 - Jogar um tijolo na CPU - 20 de dano - 40 de chance de acerto \n 4 - Recarregar\n 5 - Sair \n\n";
+char info_server[269] = "Server-> Ataque: \n 1 - Rodar um programa .exe - 25 de dano - 40 de chance de acerto\n 2 - Abrir Google Chrome no Processo inimigo - 10 de dano - 70 de chance de acerto\n 3 - Abrir Android Studio - 15 de dano - 50 de chance de acerto\n 4 - Recarregar\n 5 - Sair \n\n";
 
 
 char info_attack_1[40] = "Gerando deadlock no processo inimigo\n";
