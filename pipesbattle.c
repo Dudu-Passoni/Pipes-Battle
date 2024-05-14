@@ -9,7 +9,7 @@
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
-int atack(char ident[40]);
+int attack(char ident[40]);
 
 void *count_time(void *arg);
 
@@ -21,6 +21,9 @@ int descritor, // usado para criar o processo filho pelo fork
 
     pthread_t thread;
     pthread_create(&thread, NULL, count_time, NULL);
+    
+    system("clear");
+    printf("\n *___Pipes-Battle___*\n");    
 
     if (pipe(pipe1)<0 || pipe(pipe2) <0)
     { 
@@ -37,7 +40,7 @@ int descritor, // usado para criar o processo filho pelo fork
     { 
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
-            client(pipe2[0], pipe1[1]); // Chama CLIENTE no PAI
+        client(pipe2[0], pipe1[1]); // Chama CLIENTE no PAI
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
             exit(0);
@@ -47,7 +50,7 @@ int descritor, // usado para criar o processo filho pelo fork
     { 
         close(pipe1[1]); // fecha escrita no pipe1
         close(pipe2[0]); // fecha leitura no pipe2
-            server(pipe1[0], pipe2[1]); // Chama SERVIDOR no FILHO
+        server(pipe1[0], pipe2[1]); // Chama SERVIDOR no FILHO
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
             exit(0);
@@ -74,14 +77,17 @@ void client (readfd, writefd)
     int vida = 100;
     int mana = 100;
     char vida_inimigo_conv[40];
-
+    buff.vida_inimigo = 100;
 
     while(1)
     {
-	    printf("\n Vida do Server: %d\n", buff.vida_inimigo);
+	      printf("\n Client-> Vida do Server: %d\n", buff.vida_inimigo);
 
-        printf(" \n Client-> Mana: %d\n", mana);
-        printf("\n %s", info_client); 
+        printf("\n Client-> Vida: %d", vida);
+        //printf("\n Client-> Mana: %d", mana);
+        
+
+        printf("\n\n %s", info_client); 
 
         scanf("%d", &aux);
         printf(" \n Client->");
@@ -115,24 +121,24 @@ void client (readfd, writefd)
             exit(0);
             break;
         }
-    buff.vida_inimigo = atoi(vida_inimigo_conv);
+        buff.vida_inimigo = vida;
+        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
 
         write(writefd, buff.identify, 40);
-	    //write(writefd, vida_inimigo_conv, 40);
+	      write(writefd, vida_inimigo_conv, 40);
 
         read(readfd, buff.identify, 40);
-	    //read(readfd, vida_inimigo_conv, 40);
-        	
-	//system("clear");
+	      read(readfd, vida_inimigo_conv, 40);
+        
+        buff.vida_inimigo = atoi(vida_inimigo_conv); 
 
-        int dano = atack(buff.identify);
+	      system("clear");
+
+        int dano = attack(buff.identify);
         vida = vida - dano;
 
-        printf("\n Client->");
-        printf(" Vida: %d", vida);
-
         if(vida <= 0){
-            printf("Client perdeu :(\n");
+            printf("Client perdeu \n");
             exit(0);
         }
     }
@@ -158,35 +164,33 @@ void server(readfd, writefd)
     int aux1 =0;
     int vida = 100;
     int mana = 100;
-	char vida_inimigo_conv[40];
+	  char vida_inimigo_conv[40];
+    buff.vida_inimigo = 100;
 
     while(1)
     {
         read(readfd, buff.identify, 40);
-	    //read(readfd, vida_inimigo_conv, 40);
-
-	//system("clear");
-        int dano = atack(buff.identify);
+	      read(readfd, vida_inimigo_conv, 40);
+        
+        buff.vida_inimigo = atoi(vida_inimigo_conv);    
+        
+      	system("clear");
+        
+        int dano = attack(buff.identify);
         vida = vida - dano;
         
         if(vida <= 0){
-            printf("Client perdeu :(\n");
+            printf("Server perdeu \n");
             exit(0);
         }
-        else 
-        {
         printf("\n Vida do Client: %d\n", buff.vida_inimigo);    
 
-        printf("\n Server->");
-        printf(" Vida: %d", vida);
+        printf("\n Server-> Vida: %d", vida);
+        //printf("\n Server-> Mana: %d", mana);
+
         buff.vida_inimigo = vida;
-        }
 
-        printf("\n Server->");
-        printf(" Mana: %d\n", mana);
-
-
-        printf("\n %s", info_server);
+        printf("\n\n %s", info_server);
 
         scanf("%d", &aux1);
         printf(" \n Server->");
@@ -220,17 +224,18 @@ void server(readfd, writefd)
             exit(0);
             break;
         }
-        buff.vida_inimigo = atoi(vida_inimigo_conv);
-	    //write(writefd, vida_inimigo_conv, 40);
+        buff.vida_inimigo = vida;
+        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
         write(writefd, buff.identify, 40);
+        write(writefd, vida_inimigo_conv, 40);
+
     }
 } // Fim da Funcao Server
 /*
-____________________________________________________________________________________________________________________
-____________________________________________________________________________________________________________________
+______________________________________________________________________
 */
 
-int atack(char ident[40]){
+int attack(char ident[40]){
 
     if (strcmp(ident, "Deadlock") == 0){
         printf("\n Server ->");
@@ -247,7 +252,7 @@ int atack(char ident[40]){
         printf("\n Server ->");
         if (rand() % 100 > 30){
             printf(" Deu pau em tudo, meu BCP sumiu!!\n");
-                return 5;
+                return 15;
         }
         else{
             printf(" *Miss* Não vou dividir nada!\n");
