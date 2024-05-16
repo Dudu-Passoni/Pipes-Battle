@@ -36,34 +36,27 @@ int descritor, // usado para criar o processo filho pelo fork
         printf("Erro na chamada FORK");
         exit(0);
     }
-    else if (descritor >0) // PROCESSO PAI
+    else if (descritor >0) // Processo pai
     { 
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
-        client(pipe2[0], pipe1[1]); // Chama CLIENTE no PAI
+        client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
             exit(0);
-    } // FIM DO PROCESSO PAI
+    } // Fim do processo pai
 
-    else // PROCESSO FILHO
+    else // Processo filho
     { 
         close(pipe1[1]); // fecha escrita no pipe1
         close(pipe2[0]); // fecha leitura no pipe2
-        server(pipe1[0], pipe2[1]); // Chama SERVIDOR no FILHO
+        server(pipe1[0], pipe2[1]); // Chama Server no filho
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
             exit(0);
-    } // FIM DO PROCESSO FILHO
-} // FIM DO MAIN
-/*
------------------------------------------------------------------------------------
-------------------------
-Funcao Client: Executa no processo PAI
-Envia o nome do arquivo para o FILHO
-Recebe os dados do FILHO e imprime na tela
------------------------------------------------------------------------------------
------------------------- */
+    } // Fim do processo filho
+} // Fim do main
+
 void client (readfd, writefd)
     int readfd, // leitura do pipe2[0]
         writefd;// escrita no pipe1[1]
@@ -132,7 +125,7 @@ void client (readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv); 
 
-	      system("clear");
+	    system("clear");
 
         int dano = attack(buff.identify);
         vida = vida - dano;
@@ -144,14 +137,6 @@ void client (readfd, writefd)
     }
 } // Fim da Funcao CLIENT
 
-/*
------------------------------------------------------------------------------------
-------------------------
-Funcao Server: Executa no processo FILHO
-Abre o arquivo solicitado e envia seu conteudo
-para o PAI
------------------------------------------------------------------------------------
------------------------- */
 void server(readfd, writefd)
     int readfd, // leitura do pipe1[0]
         writefd; // escrita no pipe2[1]
@@ -164,7 +149,7 @@ void server(readfd, writefd)
     int aux1 =0;
     int vida = 100;
     int mana = 100;
-	  char vida_inimigo_conv[40];
+	char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
     while(1)
@@ -231,68 +216,66 @@ void server(readfd, writefd)
 
     }
 } // Fim da Funcao Server
-/*
-______________________________________________________________________
-*/
 
+// Controle dos ataques
+// Ataques do Client
 int attack(char ident[40]){
 
     if (strcmp(ident, "Deadlock") == 0){
         printf("\n Server ->");
         if(rand() % 100 > 40){
-            printf(" Tomei um Deadlock na boca\n");
+            printf("%s", info_deadlock);
                 return 10;
         }
         else{
-            printf(" *Miss* Errou o ataque, trouxa!\n");
+            printf("%s", miss_deadlock);
                 return 0;
         }
     }
     else if (strcmp(ident, "Divisao por zero") == 0){
         printf("\n Server ->");
-        if (rand() % 100 > 30){
-            printf(" Deu pau em tudo, meu BCP sumiu!!\n");
+        if (rand() % 100 > 50){
+            printf("%s", info_div_zero);
                 return 15;
         }
         else{
-            printf(" *Miss* Não vou dividir nada!\n");
+            printf("%s", miss_div_zero);
                 return 0;
         }
     }
     else if (strcmp(ident, "Tijolada na CPU") == 0){
         printf("\n Server ->");
         if (rand() % 100 > 60){
-            printf(" Tomei uma tijolada na CPU, ai\n");
+            printf("%s", info_tijolo);
                 return 20;
         }
         else{
-            printf(" *Miss* Esquivo, esquivo!\n");
+            printf("%s", miss_tijolo);
                 return 0;
         }
     }
-    //_______________________________________________________________
-    //Ataque do proximo sub-processo
+    //Ataque do Server
 
     else if(strcmp(ident, "Rodar exe") == 0){
         printf("\n Client ->");
         if(rand() % 100 > 60){
-            printf(" Credo, Windows!\n");
+            printf("%s", info_exe);
                 return 25;
         }
         else{
-            printf(" *Miss* Deus me livre, executar programa de Windows!\n");
+            printf("%s", miss_exe);
                 return 0;
         }
     }
     else if(strcmp(ident, "Abrir Google Chrome") == 0){
         printf("\n Client ->");
 
-        if(rand() % 100 > 30){
-            printf(" Nããããão, minha RAM!\n");
+        if(rand() % 100 > 50){
+            printf("%s", info_chrome);
                 return 10;
         }
         else{
-            printf(" *Miss* NÃO. Minha RAM é só minha!\n");
+            printf("%s", miss_chrome);
                 return 0;
         }
     }
@@ -300,11 +283,11 @@ int attack(char ident[40]){
         printf("\n Client ->");
 
         if(rand() % 100 > 50){
-            printf(" Estou sem recursos, meu Deus!\n");
+            printf("%s", info_android);
                 return 15;
         }
         else{
-            printf(" *Miss* Errou, bobão!\n");
+            printf("%s", miss_android);
                 return 0;
         }
     }
@@ -317,7 +300,7 @@ int attack(char ident[40]){
             return 0;
     }
 }
-//_______________________________________________________________________
+// Fim da função de controle dos ataques
 
 void *count_time(void *arg){
     unsigned long int i;
