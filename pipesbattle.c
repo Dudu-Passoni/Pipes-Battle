@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "strings.h"
+#include "strings.h" //Pra deixar o codigo MENOS feio 
 
 #define MAXBUFF 1024
 
