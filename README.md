@@ -11,5 +11,5 @@ gcc -o PipesBattle pipesbattle.c -pthread
 ```
 To run on windows
 ```
-echo n roda :)
+it doesn't :)
 ```
