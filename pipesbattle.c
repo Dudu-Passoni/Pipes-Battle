@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "strings.h" //Pra deixar o codigo MENOS feio 
+#include "strings.h"
 
 #define MAXBUFF 1024
+int lock = 1;
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
@@ -18,9 +19,6 @@ int main(int argc, char **argv){
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
     pipe2[2]; // comunicacao filho -> pai
-
-    pthread_t thread;
-    pthread_create(&thread, NULL, count_time, NULL);
     
     system("clear");
     printf("\n *___Pipes-Battle___*\n");    
@@ -72,9 +70,16 @@ void client (readfd, writefd)
     char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
+    pthread_t thread1;
+    //pthread_create(&thread1, NULL, count_time, NULL);
+
+
     while(1)
     {
-	      printf("\n Client-> Vida do Server: %d\n", buff.vida_inimigo);
+        lock = 0;
+        pthread_create(&thread1, NULL, count_time, NULL);
+
+	    printf("\n Client-> Vida do Server: %d\n", buff.vida_inimigo);
 
         printf("\n Client-> Vida: %d", vida);
         //printf("\n Client-> Mana: %d", mana);
@@ -114,6 +119,8 @@ void client (readfd, writefd)
             exit(0);
             break;
         }
+        lock = 1;
+
         buff.vida_inimigo = vida;
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
 
@@ -154,6 +161,8 @@ void server(readfd, writefd)
 
     while(1)
     {
+        pthread_create(&thread2, NULL, count_time, NULL);
+
         read(readfd, buff.identify, 40);
 	      read(readfd, vida_inimigo_conv, 40);
         
@@ -209,6 +218,8 @@ void server(readfd, writefd)
             exit(0);
             break;
         }
+        lock = 1;
+
         buff.vida_inimigo = vida;
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
         write(writefd, buff.identify, 40);
@@ -303,11 +314,16 @@ int attack(char ident[40]){
 // Fim da função de controle dos ataques
 
 void *count_time(void *arg){
-    unsigned long int i;
-    for(i = 0; i < 10000; i++){
-        //system("clear");
-        //printf("Tempo: %ld\n", i);
-        //sleep(1);
+    for(int i = 1; i <= 20; i++){
+        if(lock == 0){
+            printf("Tempo: %d\n", i);
+            sleep(1);
+        }       
+        else
+            pthread_exit(NULL);
+            
     }
+    printf("Tempo esgotado, babaca\n");
     pthread_exit(NULL);
 }
+
