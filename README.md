@@ -9,3 +9,7 @@ To run on linux:
 gcc -o PipesBattle pipesbattle.c -pthread
 ./PipesBattle
 ```
+To run on windows
+```
+echo n roda :)
+```
