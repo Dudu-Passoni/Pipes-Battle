@@ -326,4 +326,3 @@ void *count_time(void *arg){
     printf("Tempo esgotado, babaca\n");
     pthread_exit(NULL);
 }
-
