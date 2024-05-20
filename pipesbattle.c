@@ -142,7 +142,7 @@ void client (readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv); 
 
-	    //system("clear");
+	    system("clear");
 
         int dano = attack(buff.identify);
         vida = vida - dano;
@@ -183,7 +183,7 @@ void server(readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv);    
         
-      	//system("clear");
+      	system("clear");
         
         int dano = attack(buff.identify);
         vida = vida - dano;
