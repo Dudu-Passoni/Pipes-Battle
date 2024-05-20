@@ -4,9 +4,12 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "strings.h"
+#include <semaphore.h>
 
 #define MAXBUFF 1024
+
 int lock = 1;
+sem_t mutex; 
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
@@ -15,6 +18,8 @@ int attack(char ident[40]);
 void *count_time(void *arg);
 
 int main(int argc, char **argv){
+
+sem_init(&mutex, 0, 1);
 
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
@@ -53,6 +58,7 @@ int descritor, // usado para criar o processo filho pelo fork
         close(pipe2[1]); // fecha escrita no pipe2
             exit(0);
     } // Fim do processo filho
+    sem_destroy(&mutex);
 } // Fim do main
 
 void client (readfd, writefd)
@@ -76,7 +82,9 @@ void client (readfd, writefd)
 
     while(1)
     {
+        sem_wait(&mutex);
         lock = 0;
+        sem_post(&mutex);
         pthread_create(&thread1, NULL, count_time, NULL);
 
 	    printf("\n Client-> Vida do Server: %d\n", buff.vida_inimigo);
@@ -119,7 +127,9 @@ void client (readfd, writefd)
             exit(0);
             break;
         }
+        sem_wait(&mutex);
         lock = 1;
+        sem_post(&mutex);
 
         buff.vida_inimigo = vida;
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
@@ -132,7 +142,7 @@ void client (readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv); 
 
-	    system("clear");
+	    //system("clear");
 
         int dano = attack(buff.identify);
         vida = vida - dano;
@@ -153,22 +163,27 @@ void server(readfd, writefd)
         char identify[MAXBUFF];
     };
     struct str buff;
-    int aux1 =0;
+    int aux1 = 0;
     int vida = 100;
     int mana = 100;
 	char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
+    pthread_t thread2;
+
     while(1)
     {
-        pthread_create(&thread2, NULL, count_time, NULL);
-
+        sem_wait(&mutex);
+        lock = 2;
+        sem_post(&mutex);
+        
         read(readfd, buff.identify, 40);
-	      read(readfd, vida_inimigo_conv, 40);
+	    read(readfd, vida_inimigo_conv, 40);
+
         
         buff.vida_inimigo = atoi(vida_inimigo_conv);    
         
-      	system("clear");
+      	//system("clear");
         
         int dano = attack(buff.identify);
         vida = vida - dano;
@@ -218,13 +233,17 @@ void server(readfd, writefd)
             exit(0);
             break;
         }
-        lock = 1;
 
         buff.vida_inimigo = vida;
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
         write(writefd, buff.identify, 40);
         write(writefd, vida_inimigo_conv, 40);
 
+        sem_wait(&mutex);
+        printf("ENTROU AQUI\n");
+        lock = 1;
+        printf("LOCK: %d\n", lock);
+        sem_post(&mutex);
     }
 } // Fim da Funcao Server
 
@@ -315,14 +334,17 @@ int attack(char ident[40]){
 
 void *count_time(void *arg){
     for(int i = 1; i <= 20; i++){
+        sem_wait(&mutex);
         if(lock == 0){
-            printf("Tempo: %d\n", i);
+            printf("Tempo1: %d\n", i);
             sleep(1);
+            sem_post(&mutex);
         }       
         else
             pthread_exit(NULL);
-            
+            sem_post(&mutex);
     }
     printf("Tempo esgotado, babaca\n");
     pthread_exit(NULL);
 }
+
