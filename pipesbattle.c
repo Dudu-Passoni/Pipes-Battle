@@ -8,8 +8,8 @@
 
 #define MAXBUFF 1024
 
-int lock = 1;
-sem_t mutex; 
+pthread_mutex_t lock; 
+int control_lock = 1; 
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
@@ -19,7 +19,6 @@ void *count_time(void *arg);
 
 int main(int argc, char **argv){
 
-sem_init(&mutex, 0, 1);
 
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
@@ -57,7 +56,6 @@ int descritor, // usado para criar o processo filho pelo fork
         close(pipe2[1]); // fecha escrita no pipe2
             exit(0);
     } // Fim do processo filho
-    sem_destroy(&mutex);
 } // Fim do main
 
 void client (readfd, writefd)
@@ -76,15 +74,15 @@ void client (readfd, writefd)
     buff.vida_inimigo = 100;
 
     pthread_t thread1;
-    //pthread_create(&thread1, NULL, count_time, NULL);
+    pthread_create(&thread1, NULL, count_time, NULL);
+    pthread_mutex_init(&lock, NULL);
 
 
     while(1)
     {
-        sem_wait(&mutex);
-        lock = 0;
-        sem_post(&mutex);
-        pthread_create(&thread1, NULL, count_time, NULL);
+        pthread_mutex_lock(&lock);
+        control_lock = 0;
+        pthread_mutex_unlock(&lock);
 	
 	color_client();
 	    printf("Vida do Server: %d\n", buff.vida_inimigo);
@@ -128,9 +126,10 @@ void client (readfd, writefd)
             exit(0);
             break;
         }
-        sem_wait(&mutex);
-        lock = 1;
-        sem_post(&mutex);
+
+        pthread_mutex_lock(&lock);
+        control_lock = 1;
+        pthread_mutex_unlock(&lock);
 
         buff.vida_inimigo = vida;
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
@@ -174,9 +173,9 @@ void server(readfd, writefd)
 
     while(1)
     {
-        sem_wait(&mutex);
-        lock = 2;
-        sem_post(&mutex);
+        pthread_mutex_lock(&lock);
+        control_lock = 1;
+        pthread_mutex_unlock(&lock);
         
         read(readfd, buff.identify, 40);
 	    read(readfd, vida_inimigo_conv, 40);
@@ -244,10 +243,9 @@ void server(readfd, writefd)
         write(writefd, buff.identify, 40);
         write(writefd, vida_inimigo_conv, 40);
 
-        sem_wait(&mutex);
-        lock = 1;
-        printf("LOCK: %d\n", lock);
-        sem_post(&mutex);
+        pthread_mutex_lock(&lock);
+        control_lock = 0;
+        pthread_mutex_unlock(&lock);
     }
 } // Fim da Funcao Server
 
@@ -334,18 +332,49 @@ int attack(char ident[40]){
 }
 // Fim da função de controle dos ataques
 
-void *count_time(void *arg){
-    for(int i = 1; i <= 20; i++){
-        sem_wait(&mutex);
-        if(lock == 0){
-            //printf("Tempo1: %d\n", i);
+/*void *count_time(void *arg){
+        int count = 0;
+        while(1){
+            if(control_lock == 1){
+                count = 0;
+                //pthread_mutex_lock(&lock);
+                //control_lock = 0;
+                //pthread_mutex_unlock(&lock);
+                // Continue counting even when lock is set to 1
+            }
+            if(count <= 20){
+                sleep(1);
+                printf("Count: %d\n", count);
+                count++;
+            }
+            else{
+                break;
+            }
+        }
+        pthread_exit(NULL);
+    }*/
+
+void *count_time(void *arg) {
+    thread:
+    int count = 0;
+    int previous_lock = control_lock;
+    while (1) {
+        if (control_lock != previous_lock) {
+            count = 0;
+            previous_lock = control_lock;
+        }
+        if (count <= 20) {
             sleep(1);
-            sem_post(&mutex);
-        }       
-        else
-            pthread_exit(NULL);
-            sem_post(&mutex);
+            printf("Count: %d\n", count);
+            count++;
+        } else {
+            break;
+        }
     }
-    printf("Tempo esgotado, babaca\n");
-    pthread_exit(NULL);
+    printf("Time's up!\n");
+    printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
+    goto thread;
+    //pthread_exit(NULL);
 }
+    
+    
