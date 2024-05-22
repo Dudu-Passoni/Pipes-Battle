@@ -41,8 +41,7 @@ int descritor, // usado para criar o processo filho pelo fork
     }
     else if (descritor >0) // Processo pai
     { 
-        close(pipe1[0]); // fecha leitura no pipe1
-        close(pipe2[1]); // fecha escrita no pipe2
+        close(pipe1[0]); // fecha leitura no pipe1 close(pipe2[1]); // fecha escrita no pipe2
         client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
@@ -86,17 +85,19 @@ void client (readfd, writefd)
         lock = 0;
         sem_post(&mutex);
         pthread_create(&thread1, NULL, count_time, NULL);
+	
+	color_client();
+	    printf("Vida do Server: %d\n", buff.vida_inimigo);
+	
+	color_client();
+        printf("Vida: %d", vida);
+	
+	color_client();
+        printf("%s", info_client); 
 
-	    printf("\n Client-> Vida do Server: %d\n", buff.vida_inimigo);
-
-        printf("\n Client-> Vida: %d", vida);
-        //printf("\n Client-> Mana: %d", mana);
-        
-
-        printf("\n\n %s", info_client); 
-
+    color_client();
         scanf("%d", &aux);
-        printf(" \n Client->");
+	color_client();
 
         switch (aux)
         {
@@ -192,17 +193,21 @@ void server(readfd, writefd)
             printf("Server perdeu \n");
             exit(0);
         }
-        printf("\n Vida do Client: %d\n", buff.vida_inimigo);    
 
-        printf("\n Server-> Vida: %d", vida);
-        //printf("\n Server-> Mana: %d", mana);
+        color_server();
+            printf(" Vida do Client: %d\n", buff.vida_inimigo);    
+
+        color_server();
+            printf(" Vida: %d", vida);
 
         buff.vida_inimigo = vida;
 
-        printf("\n\n %s", info_server);
+        color_server();
+            printf("%s", info_server);
 
-        scanf("%d", &aux1);
-        printf(" \n Server->");
+        color_server();
+            scanf("%d", &aux1);
+        color_server();
 
         switch (aux1)
         {
@@ -240,7 +245,6 @@ void server(readfd, writefd)
         write(writefd, vida_inimigo_conv, 40);
 
         sem_wait(&mutex);
-        printf("ENTROU AQUI\n");
         lock = 1;
         printf("LOCK: %d\n", lock);
         sem_post(&mutex);
@@ -252,7 +256,7 @@ void server(readfd, writefd)
 int attack(char ident[40]){
 
     if (strcmp(ident, "Deadlock") == 0){
-        printf("\n Server ->");
+        color_server();
         if(rand() % 100 > 40){
             printf("%s", info_deadlock);
                 return 10;
@@ -263,7 +267,7 @@ int attack(char ident[40]){
         }
     }
     else if (strcmp(ident, "Divisao por zero") == 0){
-        printf("\n Server ->");
+        color_server();
         if (rand() % 100 > 50){
             printf("%s", info_div_zero);
                 return 15;
@@ -274,7 +278,7 @@ int attack(char ident[40]){
         }
     }
     else if (strcmp(ident, "Tijolada na CPU") == 0){
-        printf("\n Server ->");
+        color_server();
         if (rand() % 100 > 60){
             printf("%s", info_tijolo);
                 return 20;
@@ -287,7 +291,7 @@ int attack(char ident[40]){
     //Ataque do Server
 
     else if(strcmp(ident, "Rodar exe") == 0){
-        printf("\n Client ->");
+        color_client();
         if(rand() % 100 > 60){
             printf("%s", info_exe);
                 return 25;
@@ -298,8 +302,7 @@ int attack(char ident[40]){
         }
     }
     else if(strcmp(ident, "Abrir Google Chrome") == 0){
-        printf("\n Client ->");
-
+        color_client();
         if(rand() % 100 > 50){
             printf("%s", info_chrome);
                 return 10;
@@ -310,8 +313,7 @@ int attack(char ident[40]){
         }
     }
     else if(strcmp(ident, "Abrir Android Studio") == 0){
-        printf("\n Client ->");
-
+        color_client();
         if(rand() % 100 > 50){
             printf("%s", info_android);
                 return 15;
