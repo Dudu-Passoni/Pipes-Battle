@@ -331,29 +331,6 @@ int attack(char ident[40]){
     }
 }
 // Fim da função de controle dos ataques
-
-/*void *count_time(void *arg){
-        int count = 0;
-        while(1){
-            if(control_lock == 1){
-                count = 0;
-                //pthread_mutex_lock(&lock);
-                //control_lock = 0;
-                //pthread_mutex_unlock(&lock);
-                // Continue counting even when lock is set to 1
-            }
-            if(count <= 20){
-                sleep(1);
-                printf("Count: %d\n", count);
-                count++;
-            }
-            else{
-                break;
-            }
-        }
-        pthread_exit(NULL);
-    }*/
-
 void *count_time(void *arg) {
     thread:
     int count = 0;
