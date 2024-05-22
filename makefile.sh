@@ -1,1 +1,1 @@
-gcc -o PipesBattle pipesbattle.c && ./PipesBattle
+gcc -o PipesBattle pipesbattle.c -lpthreads && ./PipesBattle
