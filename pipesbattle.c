@@ -336,7 +336,7 @@ void *count_time(void *arg){
     for(int i = 1; i <= 20; i++){
         sem_wait(&mutex);
         if(lock == 0){
-            printf("Tempo1: %d\n", i);
+            //printf("Tempo1: %d\n", i);
             sleep(1);
             sem_post(&mutex);
         }       
@@ -347,4 +347,3 @@ void *count_time(void *arg){
     printf("Tempo esgotado, babaca\n");
     pthread_exit(NULL);
 }
-
