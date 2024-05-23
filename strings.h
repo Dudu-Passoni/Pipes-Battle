@@ -1,4 +1,6 @@
-/* Descrição: Arquivo de cabeçalho com as strings longas utilizadas no jogo!! */ 
+/*
+ * Constantes e Strings lonags utilizadas no programa
+ */ 
 
 #include <stdio.h>
 
@@ -47,10 +49,56 @@ char *info_android = " Estou sem recursos, meu Deus!\n";
 char *miss_android = " *Miss* Errou, bobão!\n";
 
 //Functions
+
 void color_client(){
 	printf(ANSI_COLOR_YELLOW "\n Client -> " ANSI_COLOR_RESET);
 }
 
 void color_server(){
 	printf(ANSI_COLOR_RED "\n Server -> " ANSI_COLOR_RESET);
+}
+
+void welcome_screen(){
+	printf("__        __   _                            _             \n");
+    printf("\\ \\      / /__| | ___ ___  _ __ ___   ___  | |_ ___       \n");
+    printf(" \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\      \n");
+    printf("  \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) |     \n");
+    printf(" __\\_/\\_/ \\___|_|\\___\\___/|_| |_|_|_|\\___|_|\\__\\___/      \n");
+    printf("|  _ \\(_)_ __   ___  ___      | __ )  __ _| |_| |_| | ___ \n");
+    printf("| |_) | | '_ \\ / _ \\/ __|_____|  _ \\ / _` | __| __| |/ _ \\\n");
+    printf("|  __/| | |_) |  __/\\__ \\_____| |_) | (_| | |_| |_| |  __/\n");
+    printf("|_|   |_| .__/ \\___||___/     |____/ \\__,_|\\__|\\__|_|\\___|\n");
+    printf("        |_|                                              \n");
+	printf("\n");
+	printf("Pressione qualquer tecla para continuar\n");
+    getchar();
+	system("clear");
+}
+
+void client_screen(){
+	printf("  ____ _ _            _   \n");
+    printf(" / ___| (_) ___ _ __ | |_ \n");
+    printf("| |   | | |/ _ \\ '_ \\| __|\n");
+    printf("| |___| | |  __/ | | | |_ \n");
+    printf(" \\____|_|_|\\___|_| |_|\\__|\n");
+}
+
+void server_screen(){
+	printf(" ____                           \n");
+    printf("/ ___|  ___ _ ____   _____ _ __ \n");
+    printf("\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|\n");
+    printf(" ___) |  __/ |   \\ V /  __/ |   \n");
+    printf("|____/ \\___|_|    \\_/ \\___|_|   \n");
+}
+
+void game_over(){ // A coisa mais dificil da história é sair desse programa de um jeito correto!
+	//system("clear");
+	printf("  ____                         ___                 \n");
+    printf(" / ___| __ _ _ __ ___   ___   / _ \\__   _____ _ __ \n");
+    printf("| |  _ / _` | '_ ` _ \\ / _ \\ | | | \\ \\ / / _ \\ '__|\n");
+    printf("| |_| | (_| | | | | | |  __/ | |_| |\\ V /  __/ |   \n");
+    printf(" \\____|\\__,_|_| |_| |_|\\___|  \\___/  \\_/ \\___|_|   \n");
+	printf("Pressione CTRL + C para sair \nimplementar handler para saída automática!");
+	getchar();
+	exit(0);
 }

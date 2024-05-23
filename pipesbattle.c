@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "strings.h"
 #include <semaphore.h>
+#include "strings.h"
+#include "attack.h"
 
 #define MAXBUFF 1024
 
+sem_t semaphore;
 pthread_mutex_t lock; 
 int control_lock = 1; 
 
@@ -23,9 +25,11 @@ int main(int argc, char **argv){
 int descritor, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
     pipe2[2]; // comunicacao filho -> pai
+
+//sem_init(&semaphore, 0, 0);
     
     system("clear");
-    printf("\n *___Pipes-Battle___*\n");    
+    welcome_screen();
 
     if (pipe(pipe1)<0 || pipe(pipe2) <0)
     { 
@@ -56,7 +60,9 @@ int descritor, // usado para criar o processo filho pelo fork
         close(pipe2[1]); // fecha escrita no pipe2
             exit(0);
     } // Fim do processo filho
-} // Fim do main
+    pthread_mutex_destroy(&lock);
+    return 0;
+} 
 
 void client (readfd, writefd)
     int readfd, // leitura do pipe2[0]
@@ -66,6 +72,7 @@ void client (readfd, writefd)
         int vida_inimigo;
         char identify[MAXBUFF];
     };
+
     struct str buff;
     int aux = 0;
     int vida = 100;
@@ -81,9 +88,10 @@ void client (readfd, writefd)
     while(1)
     {
         pthread_mutex_lock(&lock);
-        control_lock = 0;
+        control_lock = 0;               // Controle do relogio de turnos
         pthread_mutex_unlock(&lock);
 	
+        client_screen();
 	color_client();
 	    printf("Vida do Server: %d\n", buff.vida_inimigo);
 	
@@ -95,27 +103,28 @@ void client (readfd, writefd)
 
     color_client();
         scanf("%d", &aux);
-	color_client();
+	//color_client();
+    //sem_wait(&semaphore);
 
         switch (aux)
         {
         case 1:
-            printf(" %s", info_attack_1);
+            //printf(" %s", info_attack_1);
                 mana = mana - 25;
                 strcpy(buff.identify, "Deadlock");
             break;
         case 2:
-            printf(" %s", info_attack_2);
+           // printf(" %s", info_attack_2);
                 mana = mana - 25;
                 strcpy(buff.identify, "Divisao por zero");
             break;
         case 3:
-            printf(" %s", info_attack_3);
+           // printf(" %s", info_attack_3);
                 mana = mana - 25;
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
-            printf(" %s", info_reload);
+           // printf(" %s", info_reload);
                 mana = mana + 25;
             break;
         case 5:
@@ -132,25 +141,24 @@ void client (readfd, writefd)
         pthread_mutex_unlock(&lock);
 
         buff.vida_inimigo = vida;
-        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
+        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo); //Converte a vida do inimigo para string
 
         write(writefd, buff.identify, 40);
-	      write(writefd, vida_inimigo_conv, 40);
+	    write(writefd, vida_inimigo_conv, 40);
 
         read(readfd, buff.identify, 40);
-	      read(readfd, vida_inimigo_conv, 40);
+	    read(readfd, vida_inimigo_conv, 40);
         
-        buff.vida_inimigo = atoi(vida_inimigo_conv); 
+        buff.vida_inimigo = atoi(vida_inimigo_conv); // Volta a vida do inimigo para inteiro
 
 	    system("clear");
 
         int dano = attack(buff.identify);
         vida = vida - dano;
 
-        if(vida <= 0){
-            printf("Client perdeu \n");
-            exit(0);
-        }
+        if(vida <= 0)
+            game_over(); 
+        
     }
 } // Fim da Funcao CLIENT
 
@@ -162,6 +170,7 @@ void server(readfd, writefd)
         int vida_inimigo;
         char identify[MAXBUFF];
     };
+
     struct str buff;
     int aux1 = 0;
     int vida = 100;
@@ -169,7 +178,7 @@ void server(readfd, writefd)
 	char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
-    pthread_t thread2;
+    //pthread_t thread2;
 
     while(1)
     {
@@ -188,45 +197,47 @@ void server(readfd, writefd)
         int dano = attack(buff.identify);
         vida = vida - dano;
         
-        if(vida <= 0){
-            printf("Server perdeu \n");
-            exit(0);
-        }
+        if(vida <= 0)
+            game_over();
+        
+        server_screen();
 
         color_server();
             printf(" Vida do Client: %d\n", buff.vida_inimigo);    
 
+        buff.vida_inimigo = vida;   // Recebe a vida do inimigo
+
         color_server();
             printf(" Vida: %d", vida);
 
-        buff.vida_inimigo = vida;
-
         color_server();
             printf("%s", info_server);
+        
+        //sem_wait(&semaphore);
 
         color_server();
             scanf("%d", &aux1);
-        color_server();
+       // color_server();
 
         switch (aux1)
         {
         case 1:
-            printf(" %s", info_attack_1_server);
+           // printf(" %s", info_attack_1_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Rodar exe");
             break;
         case 2:
-            printf(" %s", info_attack_2_server);
+            //printf(" %s", info_attack_2_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Abrir Google Chrome");
             break;
         case 3:
-            printf(" %s", info_attack_3_server);
+            //printf(" %s", info_attack_3_server);
                 mana = mana - 25;
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
-            printf(" %s", info_reload);
+            //printf(" %s", info_reload);
                 mana = mana + 25;
             break;
         case 5:
@@ -249,90 +260,8 @@ void server(readfd, writefd)
     }
 } // Fim da Funcao Server
 
-// Controle dos ataques
-// Ataques do Client
-int attack(char ident[40]){
-
-    if (strcmp(ident, "Deadlock") == 0){
-        color_server();
-        if(rand() % 100 > 40){
-            printf("%s", info_deadlock);
-                return 10;
-        }
-        else{
-            printf("%s", miss_deadlock);
-                return 0;
-        }
-    }
-    else if (strcmp(ident, "Divisao por zero") == 0){
-        color_server();
-        if (rand() % 100 > 50){
-            printf("%s", info_div_zero);
-                return 15;
-        }
-        else{
-            printf("%s", miss_div_zero);
-                return 0;
-        }
-    }
-    else if (strcmp(ident, "Tijolada na CPU") == 0){
-        color_server();
-        if (rand() % 100 > 60){
-            printf("%s", info_tijolo);
-                return 20;
-        }
-        else{
-            printf("%s", miss_tijolo);
-                return 0;
-        }
-    }
-    //Ataque do Server
-
-    else if(strcmp(ident, "Rodar exe") == 0){
-        color_client();
-        if(rand() % 100 > 60){
-            printf("%s", info_exe);
-                return 25;
-        }
-        else{
-            printf("%s", miss_exe);
-                return 0;
-        }
-    }
-    else if(strcmp(ident, "Abrir Google Chrome") == 0){
-        color_client();
-        if(rand() % 100 > 50){
-            printf("%s", info_chrome);
-                return 10;
-        }
-        else{
-            printf("%s", miss_chrome);
-                return 0;
-        }
-    }
-    else if(strcmp(ident, "Abrir Android Studio") == 0){
-        color_client();
-        if(rand() % 100 > 50){
-            printf("%s", info_android);
-                return 15;
-        }
-        else{
-            printf("%s", miss_android);
-                return 0;
-        }
-    }
-    else if(strcmp(ident, "Recarregar") == 0){
-        printf("Recarregando\n");
-            return 0;
-    }
-    else{
-        printf("Ataque invalido\n");
-            return 0;
-    }
-}
-// Fim da função de controle dos ataques
 void *count_time(void *arg) {
-    thread:
+    //thread:
     int count = 0;
     int previous_lock = control_lock;
     while (1) {
@@ -342,15 +271,19 @@ void *count_time(void *arg) {
         }
         if (count <= 20) {
             sleep(1);
-            printf("Count: %d\n", count);
+            //printf("Count: %d e lock: %d\n", count, control_lock);
             count++;
         } else {
             break;
         }
     }
     printf("Time's up!\n");
-    printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
-    goto thread;
+
+    //sem_post(&semaphore);
+
+    //printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
+    void *count_time(void *arg); //Recursão para reiniciar a contagem (RIP GOTO)
+    //goto thread;
     //pthread_exit(NULL);
 }
     
