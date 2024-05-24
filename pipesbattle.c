@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <signal.h>
 #include "strings.h"
 #include "attack.h"
 
@@ -55,7 +54,7 @@ int descritor, // usado para criar o processo filho pelo fork
         client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
-            exit(0);
+        exit(0);
     } // Fim do processo pai
 
     else // Processo filho
@@ -65,7 +64,7 @@ int descritor, // usado para criar o processo filho pelo fork
         server(pipe1[0], pipe2[1]); // Chama Server no filho
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
-            exit(0);
+        exit(0);
     } // Fim do processo filho
     pthread_mutex_destroy(&lock);
     return 0;
@@ -76,8 +75,8 @@ void client (readfd, writefd)
         writefd;// escrita no pipe1[1]
 {
     struct str{
-        int vida_inimigo;
-        char identify[MAXBUFF];
+           int vida_inimigo;
+           char identify[MAXBUFF];
     };
 
     struct str buff;
@@ -92,24 +91,11 @@ void client (readfd, writefd)
         control_lock = 0;               // Controle do relogio de turnos
         pthread_mutex_unlock(&lock);
         	
-        client_screen();
-	    color_client();
-	    printf("Vida do "ANSI_COLOR_RED"Server: %d\n"ANSI_COLOR_RESET, buff.vida_inimigo);
-	
-	    color_client();
-        printf("Vida: %d", vida);
-	
-	    color_client();
-        printf("%s", info_client); 
-
-        color_client();
-
+        client_presentation(vida, buff.vida_inimigo);  // Tela de apresentação do Client
+        control:
         scanf("%d", &aux);
         
-	    //color_client();
-        //sem_wait(&semaphore);
-        swi:
-        switch (aux)
+        switch (aux)  // Switch case para controle dos ataques
         {
         case 1:
                 strcpy(buff.identify, "Deadlock");
@@ -121,14 +107,11 @@ void client (readfd, writefd)
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
-                strcpy(buff.identify, "Recarregar");
+            game_over();
             break;
-        case 5:
-            printf(" Saindo do programa\n");
-            exit(0);
-            break;    
         default:
-            exit(0);
+            printf("Escolha um número valido: ");
+            goto control;
             break;
         }
 
@@ -136,14 +119,14 @@ void client (readfd, writefd)
         control_lock = 1;
         pthread_mutex_unlock(&lock);
 
-        buff.vida_inimigo = vida;
+        buff.vida_inimigo = vida; // Recebe a vida do inimigo
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo); //Converte a vida do inimigo para string
 
         write(writefd, buff.identify, 40);
-	    write(writefd, vida_inimigo_conv, 40);
+	      write(writefd, vida_inimigo_conv, 40);
 
         read(readfd, buff.identify, 40);
-	    read(readfd, vida_inimigo_conv, 40);
+	      read(readfd, vida_inimigo_conv, 40);
         
         buff.vida_inimigo = atoi(vida_inimigo_conv); // Volta a vida do inimigo para inteiro
 
@@ -182,7 +165,7 @@ void server(readfd, writefd)
         pthread_mutex_unlock(&lock);
         
         read(readfd, buff.identify, 40);
-	    read(readfd, vida_inimigo_conv, 40);
+	      read(readfd, vida_inimigo_conv, 40);
 
         
         buff.vida_inimigo = atoi(vida_inimigo_conv);    
@@ -194,27 +177,13 @@ void server(readfd, writefd)
         
         if(vida <= 0)
         game_over();
-        
-        server_screen();
-
-        color_server();
-        printf(" Vida do "ANSI_COLOR_YELLOW"Client: %d\n"ANSI_COLOR_RESET, buff.vida_inimigo);    
-
-        buff.vida_inimigo = vida;   // Recebe a vida do inimigo
-
-        color_server();
-        printf(" Vida: %d", vida);
-
-        color_server();
-        printf("%s", info_server);
-        
-        //sem_wait(&semaphore);
-
-        color_server();
+       
+        server_presentation(vida, buff.vida_inimigo);
+        control:
         scanf("%d", &aux1);
        // color_server();
 
-        switch (aux1)
+        switch (aux1) // Switch case para controle dos ataques
         {
         case 1:
                 strcpy(buff.identify, "Rodar exe");
@@ -226,14 +195,11 @@ void server(readfd, writefd)
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
-            break;
-        case 5:
-            printf(" Saindo do programa\n");
-            exit(0);
+            game_over();
             break;
         default:
-            exit(0);
-            break;
+                printf("Escolha um número valido: ");
+            goto control;
         }
 
         buff.vida_inimigo = vida;
@@ -264,7 +230,7 @@ void *count_time(void *arg) {
             break;
         }
     }
-    printf("FAÇA SEU ATAQUE!!!\n");
+    printf("\nFAÇA SEU ATAQUE!!!\n");
     
     //printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
     void *count_time(void *arg); //Recursão para reiniciar a contagem (RIP GOTO)
