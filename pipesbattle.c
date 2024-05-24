@@ -12,6 +12,7 @@
 sem_t semaphore;
 pthread_mutex_t lock; 
 int control_lock = 1; 
+int control_thread = 0;
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
@@ -28,8 +29,13 @@ int descritor, // usado para criar o processo filho pelo fork
 
 //sem_init(&semaphore, 0, 0);
     
-    system("clear");
+    clear_screen();
     welcome_screen();
+ 
+    pthread_t thread1;
+    pthread_create(&thread1, NULL, count_time, NULL);
+    pthread_mutex_init(&lock, NULL);
+
 
     if (pipe(pipe1)<0 || pipe(pipe2) <0)
     { 
@@ -80,17 +86,12 @@ void client (readfd, writefd)
     char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
-    pthread_t thread1;
-    pthread_create(&thread1, NULL, count_time, NULL);
-    pthread_mutex_init(&lock, NULL);
-
-
     while(1)
     {
         pthread_mutex_lock(&lock);
         control_lock = 0;               // Controle do relogio de turnos
         pthread_mutex_unlock(&lock);
-	
+        	
         client_screen();
 	color_client();
 	    printf("Vida do Server: %d\n", buff.vida_inimigo);
@@ -102,7 +103,8 @@ void client (readfd, writefd)
         printf("%s", info_client); 
 
     color_client();
-        scanf("%d", &aux);
+            scanf("%d", &aux);
+
 	//color_client();
     //sem_wait(&semaphore);
 
@@ -151,8 +153,8 @@ void client (readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv); // Volta a vida do inimigo para inteiro
 
-	    system("clear");
-
+        clear_screen();
+        
         int dano = attack(buff.identify);
         vida = vida - dano;
 
@@ -175,7 +177,7 @@ void server(readfd, writefd)
     int aux1 = 0;
     int vida = 100;
     int mana = 100;
-	char vida_inimigo_conv[40];
+  	char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
     //pthread_t thread2;
@@ -192,7 +194,7 @@ void server(readfd, writefd)
         
         buff.vida_inimigo = atoi(vida_inimigo_conv);    
         
-      	system("clear");
+      	clear_screen();
         
         int dano = attack(buff.identify);
         vida = vida - dano;
@@ -271,14 +273,15 @@ void *count_time(void *arg) {
         }
         if (count <= 20) {
             sleep(1);
-            //printf("Count: %d e lock: %d\n", count, control_lock);
+            printf("Count: %d e lock: %d\n", count, control_lock);
             count++;
         } else {
             break;
         }
     }
     printf("Time's up!\n");
-
+    control_thread = 1; 
+    
     //sem_post(&semaphore);
 
     //printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");

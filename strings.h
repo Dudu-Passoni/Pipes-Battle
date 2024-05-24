@@ -102,3 +102,7 @@ void game_over(){ // A coisa mais dificil da história é sair desse programa de
 	getchar();
 	exit(0);
 }
+
+void clear_screen(){
+  printf("\e[1;1H\e[2J");
+}
