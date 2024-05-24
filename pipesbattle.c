@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
 #include "strings.h"
 #include "attack.h"
 
@@ -12,11 +13,11 @@
 sem_t semaphore;
 pthread_mutex_t lock; 
 int control_lock = 1; 
-int control_thread = 0;
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
 int attack(char ident[40]);
+int handle_alarm(int signal);
 
 void *count_time(void *arg);
 
@@ -82,7 +83,6 @@ void client (readfd, writefd)
     struct str buff;
     int aux = 0;
     int vida = 100;
-    int mana = 100;
     char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
@@ -93,41 +93,35 @@ void client (readfd, writefd)
         pthread_mutex_unlock(&lock);
         	
         client_screen();
-	color_client();
-	    printf("Vida do Server: %d\n", buff.vida_inimigo);
+	    color_client();
+	    printf("Vida do "ANSI_COLOR_RED"Server: %d\n"ANSI_COLOR_RESET, buff.vida_inimigo);
 	
-	color_client();
+	    color_client();
         printf("Vida: %d", vida);
 	
-	color_client();
+	    color_client();
         printf("%s", info_client); 
 
-    color_client();
-            scanf("%d", &aux);
+        color_client();
 
-	//color_client();
-    //sem_wait(&semaphore);
-
+        scanf("%d", &aux);
+        
+	    //color_client();
+        //sem_wait(&semaphore);
+        swi:
         switch (aux)
         {
         case 1:
-            //printf(" %s", info_attack_1);
-                mana = mana - 25;
                 strcpy(buff.identify, "Deadlock");
             break;
         case 2:
-           // printf(" %s", info_attack_2);
-                mana = mana - 25;
                 strcpy(buff.identify, "Divisao por zero");
             break;
         case 3:
-           // printf(" %s", info_attack_3);
-                mana = mana - 25;
                 strcpy(buff.identify, "Tijolada na CPU");
             break;
         case 4:
-           // printf(" %s", info_reload);
-                mana = mana + 25;
+                strcpy(buff.identify, "Recarregar");
             break;
         case 5:
             printf(" Saindo do programa\n");
@@ -176,7 +170,6 @@ void server(readfd, writefd)
     struct str buff;
     int aux1 = 0;
     int vida = 100;
-    int mana = 100;
   	char vida_inimigo_conv[40];
     buff.vida_inimigo = 100;
 
@@ -200,47 +193,39 @@ void server(readfd, writefd)
         vida = vida - dano;
         
         if(vida <= 0)
-            game_over();
+        game_over();
         
         server_screen();
 
         color_server();
-            printf(" Vida do Client: %d\n", buff.vida_inimigo);    
+        printf(" Vida do "ANSI_COLOR_YELLOW"Client: %d\n"ANSI_COLOR_RESET, buff.vida_inimigo);    
 
         buff.vida_inimigo = vida;   // Recebe a vida do inimigo
 
         color_server();
-            printf(" Vida: %d", vida);
+        printf(" Vida: %d", vida);
 
         color_server();
-            printf("%s", info_server);
+        printf("%s", info_server);
         
         //sem_wait(&semaphore);
 
         color_server();
-            scanf("%d", &aux1);
+        scanf("%d", &aux1);
        // color_server();
 
         switch (aux1)
         {
         case 1:
-           // printf(" %s", info_attack_1_server);
-                mana = mana - 25;
                 strcpy(buff.identify, "Rodar exe");
             break;
         case 2:
-            //printf(" %s", info_attack_2_server);
-                mana = mana - 25;
                 strcpy(buff.identify, "Abrir Google Chrome");
             break;
         case 3:
-            //printf(" %s", info_attack_3_server);
-                mana = mana - 25;
                 strcpy(buff.identify, "Abrir Android Studio");
             break;
         case 4:
-            //printf(" %s", info_reload);
-                mana = mana + 25;
             break;
         case 5:
             printf(" Saindo do programa\n");
@@ -273,21 +258,19 @@ void *count_time(void *arg) {
         }
         if (count <= 20) {
             sleep(1);
-            printf("Count: %d e lock: %d\n", count, control_lock);
+            //printf("Count: %d e lock: %d\n", count, control_lock);
             count++;
         } else {
             break;
         }
     }
-    printf("Time's up!\n");
-    control_thread = 1; 
+    printf("FAÇA SEU ATAQUE!!!\n");
     
-    //sem_post(&semaphore);
-
     //printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
     void *count_time(void *arg); //Recursão para reiniciar a contagem (RIP GOTO)
     //goto thread;
     //pthread_exit(NULL);
 }
+
     
     

@@ -76,19 +76,23 @@ void welcome_screen(){
 }
 
 void client_screen(){
+    printf(ANSI_COLOR_YELLOW);
 	printf("  ____ _ _            _   \n");
     printf(" / ___| (_) ___ _ __ | |_ \n");
     printf("| |   | | |/ _ \\ '_ \\| __|\n");
     printf("| |___| | |  __/ | | | |_ \n");
     printf(" \\____|_|_|\\___|_| |_|\\__|\n");
+    printf(ANSI_COLOR_RESET);
 }
 
 void server_screen(){
+    printf(ANSI_COLOR_RED);
 	printf(" ____                           \n");
     printf("/ ___|  ___ _ ____   _____ _ __ \n");
     printf("\\___ \\ / _ \\ '__\\ \\ / / _ \\ '__|\n");
     printf(" ___) |  __/ |   \\ V /  __/ |   \n");
     printf("|____/ \\___|_|    \\_/ \\___|_|   \n");
+    printf(ANSI_COLOR_RESET);
 }
 
 void game_over(){ // A coisa mais dificil da história é sair desse programa de um jeito correto!
