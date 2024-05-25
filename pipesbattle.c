@@ -54,7 +54,8 @@ int descritor, // usado para criar o processo filho pelo fork
         client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
-        exit(0);
+        //exit(0);
+        return 0;
     } // Fim do processo pai
 
     else // Processo filho
@@ -64,7 +65,8 @@ int descritor, // usado para criar o processo filho pelo fork
         server(pipe1[0], pipe2[1]); // Chama Server no filho
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
-        exit(0);
+        //exit(0);
+        return 0;
     } // Fim do processo filho
     pthread_mutex_destroy(&lock);
     return 0;
@@ -108,6 +110,7 @@ void client (readfd, writefd)
             break;
         case 4:
             game_over();
+            exit(0);
             break;
         default:
             printf("Escolha um número valido: ");
@@ -127,7 +130,7 @@ void client (readfd, writefd)
 
         read(readfd, buff.identify, 40);
 	      read(readfd, vida_inimigo_conv, 40);
-        
+       
         buff.vida_inimigo = atoi(vida_inimigo_conv); // Volta a vida do inimigo para inteiro
 
         clear_screen();
@@ -196,6 +199,7 @@ void server(readfd, writefd)
             break;
         case 4:
             game_over();
+            exit(0);
             break;
         default:
                 printf("Escolha um número valido: ");
@@ -213,8 +217,8 @@ void server(readfd, writefd)
     }
 } // Fim da Funcao Server
 
-void *count_time(void *arg) {
-    //thread:
+void *count_time(void *arg) { // Thread para contar o tempos dos ataques e notificar o atacante
+    thread:
     int count = 0;
     int previous_lock = control_lock;
     while (1) {
@@ -230,13 +234,7 @@ void *count_time(void *arg) {
             break;
         }
     }
-    printf("\nFAÇA SEU ATAQUE!!!\n");
-    
-    //printf("AQUI TEM QUE IMPLEMENTAR, MANDAR UM SINAL PARA OS SUBPROCESSOS PARA PULAR O TURNO DELES!!!\n");
-    void *count_time(void *arg); //Recursão para reiniciar a contagem (RIP GOTO)
-    //goto thread;
+    printf("\nFAÇA SEU ATAQUE...\n");
+    goto thread; //GOTO para voltar para o começo da thread, recursão não funciona direito
     //pthread_exit(NULL);
 }
-
-    
-    

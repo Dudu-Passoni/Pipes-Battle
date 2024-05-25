@@ -1,5 +1,5 @@
 /*
- * Constantes e Strings lonags utilizadas no programa
+ * Constantes, Strings lonags e funções de cunho visual utilizadas no programa
  */ 
 
 #include <stdio.h>
