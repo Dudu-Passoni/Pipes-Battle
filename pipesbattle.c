@@ -1,29 +1,35 @@
+/* 
+ * Pipes-Battle, é um jogo de batalha por turnos, onde dois sub-processos se atacam por meio de 
+ * pipes. O jogo é composto por dois processos, o Client (Jogador 1) e Server(Jogador 2). 
+ * Um processo ataca o outro mandando uma mensagem identificadora pelo pipe para o outro 
+ * processo, onde é recebido. E então, a função attack é chamada, para retorna o dano causado 
+ * pelo ataque, com a chance de erro e acerto de cada ataque.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <semaphore.h>
+//#include <semaphore.h>
 #include "strings.h"
 #include "attack.h"
 
 #define MAXBUFF 1024
 
-sem_t semaphore;
 pthread_mutex_t lock; 
 int control_lock = 1; 
 
 void client (int readfd, int writefd);
 void server(int readfd, int writefd);
 int attack(char ident[40]);
-int handle_alarm(int signal);
 
-void *count_time(void *arg);
+void *count_time(void *arg); // Thread para contagem de tempo
 
 int main(int argc, char **argv){
 
 
-int descritor, // usado para criar o processo filho pelo fork
+int descript, // usado para criar o processo filho pelo fork
     pipe1[2], // comunicacao pai -> filho
     pipe2[2]; // comunicacao filho -> pai
 
@@ -43,12 +49,12 @@ int descritor, // usado para criar o processo filho pelo fork
         exit(0);
     }
     // Fork para criar o processo filho
-    if ( (descritor = fork()) <0)
+    if ( (descript = fork()) <0)
     {
         printf("Erro na chamada FORK");
         exit(0);
     }
-    else if (descritor >0) // Processo pai
+    else if (descript >0) // Processo pai
     { 
         close(pipe1[0]); // fecha leitura no pipe1 close(pipe2[1]); // fecha escrita no pipe2
         client(pipe2[0], pipe1[1]); // Chama Client no pai
@@ -110,7 +116,7 @@ void client (readfd, writefd)
             break;
         case 4:
             game_over();
-            exit(0);
+            return;
             break;
         default:
             printf("Escolha um número valido: ");
@@ -125,11 +131,11 @@ void client (readfd, writefd)
         buff.vida_inimigo = vida; // Recebe a vida do inimigo
         sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo); //Converte a vida do inimigo para string
 
-        write(writefd, buff.identify, 40);
-	      write(writefd, vida_inimigo_conv, 40);
+        write(writefd, buff.identify, 40); // Envia o ataque no pipe
+	    write(writefd, vida_inimigo_conv, 40); // Envia sua vida, para o inimigo printar
 
-        read(readfd, buff.identify, 40);
-	      read(readfd, vida_inimigo_conv, 40);
+        read(readfd, buff.identify, 40); // Recebe o ataque do inimigo
+	    read(readfd, vida_inimigo_conv, 40); // Recebe a vida do inimigo
        
         buff.vida_inimigo = atoi(vida_inimigo_conv); // Volta a vida do inimigo para inteiro
 
@@ -138,8 +144,10 @@ void client (readfd, writefd)
         int dano = attack(buff.identify);
         vida = vida - dano;
 
-        if(vida <= 0)
-            game_over(); 
+        if(vida <= 0){
+            game_over();
+            return;
+        } 
         
     }
 } // Fim da Funcao CLIENT
@@ -167,8 +175,8 @@ void server(readfd, writefd)
         control_lock = 1;
         pthread_mutex_unlock(&lock);
         
-        read(readfd, buff.identify, 40);
-	      read(readfd, vida_inimigo_conv, 40);
+        read(readfd, buff.identify, 40); // Recebe o ataque do inimigo
+	    read(readfd, vida_inimigo_conv, 40); // Recebe a vida do inimigo
 
         
         buff.vida_inimigo = atoi(vida_inimigo_conv);    
@@ -178,8 +186,10 @@ void server(readfd, writefd)
         int dano = attack(buff.identify);
         vida = vida - dano;
         
-        if(vida <= 0)
-        game_over();
+        if(vida <= 0){
+            game_over();
+            return;
+        }
        
         server_presentation(vida, buff.vida_inimigo);
         control:
@@ -199,20 +209,20 @@ void server(readfd, writefd)
             break;
         case 4:
             game_over();
-            exit(0);
+            return;
             break;
         default:
                 printf("Escolha um número valido: ");
             goto control;
         }
 
-        buff.vida_inimigo = vida;
-        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo);
-        write(writefd, buff.identify, 40);
-        write(writefd, vida_inimigo_conv, 40);
+        buff.vida_inimigo = vida; 
+        sprintf(vida_inimigo_conv,"%d",buff.vida_inimigo); //Converte a vida do inimigo para string
+        write(writefd, buff.identify, 40); // Envia o ataque no pipe
+        write(writefd, vida_inimigo_conv, 40); // Envia sua vida, para o inimigo printar
 
         pthread_mutex_lock(&lock);
-        control_lock = 0;
+        control_lock = 0;               // Controle do relogio de turnos
         pthread_mutex_unlock(&lock);
     }
 } // Fim da Funcao Server

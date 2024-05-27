@@ -1,5 +1,5 @@
 /*
- * Constantes, Strings lonags e funções de cunho visual utilizadas no programa
+ * Constantes, Strings longas e funções de cunho visual utilizadas no programa
  */ 
 
 #include <stdio.h>
@@ -26,7 +26,7 @@ char *info_attack_1_server = "Rodando exe no processo inimigo\0";
 char *info_attack_2_server = "Abrindo o Google Chrome...\0";
 char *info_attack_3_server = "Abrindo Android Studio no processo inimigo\0";
 
-char info_reload[15] = "recarregando\n\0";
+char *info_reload = "recarregando\n\0";
 
 // Respostas Client
 char *info_deadlock = " Tomei um Deadlock na boca\n\0";
@@ -56,6 +56,10 @@ void color_client(){
 
 void color_server(){
 	printf(ANSI_COLOR_RED "\n Server -> " ANSI_COLOR_RESET);
+}
+
+void clear_screen(){
+  printf("\e[1;1H\e[2J");
 }
 
 void welcome_screen(){
@@ -98,17 +102,14 @@ void server_screen(){
 
 void game_over(){ // A coisa mais dificil da história é sair desse programa de um jeito correto!
 	//system("clear");
+    clear_screen();
 	  printf("  ____                         ___                 \n");
     printf(" / ___| __ _ _ __ ___   ___   / _ \\__   _____ _ __ \n");
     printf("| |  _ / _` | '_ ` _ \\ / _ \\ | | | \\ \\ / / _ \\ '__|\n");
     printf("| |_| | (_| | | | | | |  __/ | |_| |\\ V /  __/ |   \n");
     printf(" \\____|\\__,_|_| |_| |_|\\___|  \\___/  \\_/ \\___|_|   \n");
 	  printf("Pressione CTRL + C para sair \n");
-	  exit(0);
-}
-
-void clear_screen(){
-  printf("\e[1;1H\e[2J");
+	  return;
 }
 
 
