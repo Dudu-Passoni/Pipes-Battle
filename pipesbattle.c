@@ -56,7 +56,9 @@ int descript, // usado para criar o processo filho pelo fork
     }
     else if (descript >0) // Processo pai
     { 
-        close(pipe1[0]); // fecha leitura no pipe1 close(pipe2[1]); // fecha escrita no pipe2
+
+        close(pipe1[0]); // fecha leitura no pipe1 
+        close(pipe2[1]); // fecha escrita no pipe2
         client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
@@ -192,6 +194,7 @@ void server(readfd, writefd)
         }
        
         server_presentation(vida, buff.vida_inimigo);
+        
         control:
         scanf("%d", &aux1);
        // color_server();

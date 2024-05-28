@@ -100,7 +100,7 @@ void server_screen(){
     printf(ANSI_COLOR_RESET);
 }
 
-void game_over(){ // A coisa mais dificil da história é sair desse programa de um jeito correto!
+void game_over(){
 	//system("clear");
     clear_screen();
 	  printf("  ____                         ___                 \n");
