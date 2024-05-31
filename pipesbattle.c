@@ -62,7 +62,6 @@ int descript, // usado para criar o processo filho pelo fork
         client(pipe2[0], pipe1[1]); // Chama Client no pai
         close(pipe1[1]); // fecha pipe1
         close(pipe2[0]); // fecha pipe2
-        //exit(0);
         return 0;
     } // Fim do processo pai
 
@@ -73,7 +72,6 @@ int descript, // usado para criar o processo filho pelo fork
         server(pipe1[0], pipe2[1]); // Chama Server no filho
         close(pipe1[0]); // fecha leitura no pipe1
         close(pipe2[1]); // fecha escrita no pipe2
-        //exit(0);
         return 0;
     } // Fim do processo filho
     pthread_mutex_destroy(&lock);
