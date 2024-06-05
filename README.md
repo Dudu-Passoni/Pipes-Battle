@@ -6,13 +6,22 @@ Battle between two sub-processes using pipes to comunicate.
 ##
 ![Screenshot from 2024-05-30 21-30-56](https://github.com/Dudu-Passoni/Pipes-Battle/assets/115907714/ab69bc36-8b93-4564-baa4-aab89f8ab787)
 ##
-Rodar no linux:
+Rodar no linux: 
+
 To run on linux:
+&nbsp;
 ```
 gcc -o PipesBattle pipesbattle.c -pthread
 ./PipesBattle
 ```
+Or
+```
+chmod u+x makefile.sh
+./makefile.sh
+```
+#
 Rodar no windows
+
 To run on windows
 ```
 it doesn't :)
@@ -59,3 +68,5 @@ Quando um jogador fica muito tempo para realizar um ataque, uma thread que conta
 Quando algum jogador chega a 0 de vida, uma tela de game over aparece e o jogo termina.
 
 ![Screenshot from 2024-05-30 21-37-43](https://github.com/Dudu-Passoni/Pipes-Battle/assets/115907714/3583fb7a-75a3-4e8a-9f28-eaf6a509384c)
+
+#
